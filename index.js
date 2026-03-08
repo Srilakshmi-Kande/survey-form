@@ -1,7 +1,22 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const path = require('path');
 const studentModel = require('./models/student');
+
+const mongoose = require('mongoose');
+
+mongoose.connect(process.env.MONGO_URL).then(() => {
+    console.log("Connected to MongoDB");
+}).catch((err) => {
+    console.log("Error connecting to MongoDB:", err);
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+})
 
 app.set("view engine",'ejs')
 app.use(express.json());
@@ -30,7 +45,7 @@ app.post('/submit',async (req,res) => {
         year,
         interests
     })
-
+    
     res.redirect("/response")
 
 })
