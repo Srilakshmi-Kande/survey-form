@@ -1,12 +1,12 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const fs = require('fs');
+const studentModel = require('./models/student');
 
-app.set("view engine","ejs");
+app.set("view engine",'ejs')
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use(express.static(path.join(__dirname,"public")))
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/',function(req,res){
     res.render('index')
@@ -16,23 +16,23 @@ app.get('/response',function(req,res){
     res.render('response')
 })
 
-app.post('/submit',function(req,res){
-    const filename = req.body.username.split('.').join('');
 
-    const data = `
-        Username: ${req.body.username}
-        Email: ${req.body.email}
-        Mobile Number: ${req.body.mobile}
-        College: ${req.body.college}
-        Roll No: ${req.body.rollno}
-        Branch: ${req.body.branch}
-        Year: ${req.body.year}
-        Interests: ${req.body.interests}
-    `;
+app.post('/submit',async (req,res) => {
+    let {username,email,mobile,college,rollno,branch,year,interests} = req.body;
 
-    fs.writeFile(`./files/${filename}.txt`,data, function(err){
-        res.redirect("/response")
+    let createStudent = await studentModel.create({
+        username,
+        email,
+        mobile,
+        college,
+        rollno,
+        branch,
+        year,
+        interests
     })
+
+    res.redirect("/response")
+
 })
 
 app.listen(3000)
